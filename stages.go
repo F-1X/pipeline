@@ -46,7 +46,7 @@ func stage3(ch chan int) chan int {
 	outCh := make(chan int)
 	go func() {
 		for i := range ch {
-			fmt.Println("stage3 get i",i)
+			// fmt.Println("stage3 get i",i)
 			outCh <- i
 		}
 		close(outCh)
