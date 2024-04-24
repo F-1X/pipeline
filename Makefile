@@ -4,5 +4,11 @@ test:
 race:
 	go run -race .
 
+build:
+	go build .
+
+exe: build
+	./pipeline
+
 run:
-	go build . | ./pipeline
+	go run .

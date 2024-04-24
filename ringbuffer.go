@@ -35,7 +35,7 @@ func NewRingBuffer(size int, seconds time.Duration) *RingBuffer {
 
 // Get - функция чтения из буфера. Потокобезопасна, тк используется небуферизированный канал, для доступа: r.getCh
 func (r *RingBuffer) Get() (int, error) {
-	fmt.Println("before get",r.buff,"r.rInd",r.rInd,r.wInd)
+	// fmt.Println("before get",r.buff,"r.rInd",r.rInd,r.wInd)
 	if len(r.buff) == 0 || r.rInd == -1 {
 		return 0, fmt.Errorf("buffer is empty1")
 	}
@@ -49,13 +49,13 @@ func (r *RingBuffer) Get() (int, error) {
 	if r.rInd == r.wInd {
 		r.rInd = -1
 	}
-	fmt.Println("after get",r.buff,"r.rInd",r.rInd,r.wInd,"x",x)
+	// fmt.Println("after get",r.buff,"r.rInd",r.rInd,r.wInd,"x",x)
 	return x, nil
 }
 
 // Put - функция записи в буфер.
 func (r *RingBuffer) Put(x int) {
-	fmt.Println("before put",r.buff,"r.rInd",r.rInd,r.wInd)
+	// fmt.Println("before put",r.buff,"r.rInd",r.rInd,r.wInd)
 	if len(r.buff) == 0 {
 		return
 	}
@@ -70,7 +70,7 @@ func (r *RingBuffer) Put(x int) {
 		r.rInd = r.wInd
 	}
 	r.wInd = (r.wInd + 1) % r.size
-	fmt.Println("after put",r.buff,"r.rInd",r.rInd,r.wInd)
+	// fmt.Println("after put",r.buff,"r.rInd",r.rInd,r.wInd)
 }
 
 // loop() - селектор каналов буфера
@@ -93,7 +93,7 @@ func (r *RingBuffer) loop() {
 			if err != nil {
 				fmt.Println("err",err)
 			} else {
-				fmt.Println("Send x",x)
+				// fmt.Println("Send x",x)
 				r.tmp <- x // если нет ошибок, например канал не пустой, то будет передано сообщение по каналу
 			}
 		}

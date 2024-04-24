@@ -48,7 +48,6 @@ func stage3(ch chan int) chan int {
 		for i := range ch {
 			outCh <- i
 		}
-		fmt.Println("stage3 closed")
 		close(outCh)
 	}()
 	return outCh
@@ -65,8 +64,8 @@ func Stage3Mod(fun func(ch chan int) chan int, size int, seconds time.Duration) 
 				fmt.Println("put i ch from stage3 to putCh ", i)
 				rb.putCh <- i
 			}
-			fmt.Println("Close putch")
 			close(rb.putCh)
+			close(rb.tmp)
 		}()
 		return rb.tmp
 	}
