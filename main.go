@@ -8,14 +8,7 @@ import (
 	"time"
 )
 
-func readloop() {
-	scanner := bufio.NewScanner(os.Stdin)
 
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-
-	}
-}
 
 var sizeRingBuffer int = 3
 var durationRingBuffer time.Duration = time.Second * 3
@@ -34,14 +27,8 @@ func main() {
 
 func ReadNumbers() chan int {
 	ch := make(chan int)
-	// заглушка, фейковые данные, ввод в канал
 	scanner := bufio.NewScanner(os.Stdin)
 	go func() {
-		// input := []int{-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5} // остануться 1, 2, 4, 5
-		// for _, v := range input {
-		// 	ch <- v
-		// }
-
 		for scanner.Scan() {
 			text := scanner.Text()
 			if text == "quit" || text == "exit" {
@@ -64,4 +51,3 @@ func ReadNumbers() chan int {
 	return ch
 }
 
-// func WriteRandomNumbers()

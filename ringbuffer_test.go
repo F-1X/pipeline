@@ -7,25 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTimer1second(t *testing.T) {
+func TestTimerGetPause(t *testing.T) {
 
 	sizeRingBuffer := 3
 	rb := NewRingBuffer(sizeRingBuffer, time.Duration(time.Second*1))
 
 	rb.Put(1)
-	rb.Put(2)
-	// rb.Put(3)
 
 	go rb.loop()
-	time.Sleep(time.Second * 15)
+	time.Sleep(time.Second * 2)
 
-	// x, err := rb.Get()
-	// if err != nil {
-	// 	t.Log("err", err)
+	x, err := rb.Get()
+	if err != nil {
+		assert.Equal(t, "buffer is empty1", err.Error())
+	}
 
-	// }
+	assert.Equal(t, 0, x)
 
-	// t.Log("x", x)
 }
 
 func TestPut4size3(t *testing.T) {
@@ -40,12 +38,10 @@ func TestPut4size3(t *testing.T) {
 	}()
 
 	rb.putCh <- 1
-	// <-rb.waitCh
-	time.Sleep(time.Second)
+
 	var x int
 	rb.getCh <- &x
-
-	<-rb.waitCh
+	// <-rb.waitCh
 	time.Sleep(time.Second)
 	assert.Equal(t, 1, x)
 }
@@ -69,7 +65,7 @@ func TestPut4size4(t *testing.T) {
 	}
 
 	a, err := rb.Get()
-	assert.Equal(t,"buffer is empty1", err.Error() )
+	assert.Equal(t, "buffer is empty1", err.Error())
 	assert.Equal(t, 0, a)
 }
 
@@ -152,17 +148,21 @@ func TestPut3Get3Ch(t *testing.T) {
 	rb.putCh <- 1
 	rb.putCh <- 2
 	rb.putCh <- 3
+
 	var x int
 	rb.getCh <- &x
 	<-rb.waitCh
+
 	assert.Equal(t, 1, x)
 
 	rb.getCh <- &x
 	<-rb.waitCh
+
 	assert.Equal(t, 2, x)
 
 	rb.getCh <- &x
 	<-rb.waitCh
+
 	assert.Equal(t, 3, x)
 
 }

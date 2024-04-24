@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -78,26 +79,35 @@ func TestStage3Mod(t *testing.T) {
 	stage3mod := Stage3Mod(stage3, 3, time.Second)
 
 	ch := make(chan int)
-	
-
 	maxIter := 3
-
 	go func() {
 		for i := 0; i < maxIter; i++ {
 			ch <- i
 			time.Sleep(time.Second)
 		}
 		close(ch)
-		fmt.Println("closed ch")
+	}()
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	var b []int
+	go func() {
+		go func() {
+			time.Sleep(5 * time.Second)
+			fmt.Println("Timeout: Closing Goroutine")
+			wg.Done()
+			return
+		}()
+		fmt.Println("start stage3mod")
+		out := stage3mod(ch)
+
+		for v := range out {
+			fmt.Println("get v--->", v)
+			b = append(b, v)
+		}
 
 	}()
-	out := stage3mod(ch)
-	var b []int
-	for v := range out {
-		b = append(b, v)
-		time.Sleep(time.Second)
-	}
-	fmt.Println("b", b)
+	wg.Wait()
 
-	//assert.Equal(t, []int{-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, b)
+	assert.Equal(t, []int{0, 1, 2}, b)
 }

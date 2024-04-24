@@ -46,9 +46,9 @@ func stage3(ch chan int) chan int {
 	outCh := make(chan int)
 	go func() {
 		for i := range ch {
+			fmt.Println("stage3 get i",i)
 			outCh <- i
 		}
-		fmt.Println("stage3 closed")
 		close(outCh)
 	}()
 	return outCh
@@ -60,12 +60,14 @@ func Stage3Mod(fun func(ch chan int) chan int, size int, seconds time.Duration) 
 	go rb.loop()
 
 	return func(ch chan int) chan int {
+		
 		go func() {
+			// defer close(rb.tmp) // некоторые сложности с синхронизацией отпуска по времени но канал по идее закрывать надо
 			for i := range stage3(ch) {
-				fmt.Println("put i ch from stage3 to putCh ", i)
 				rb.putCh <- i
 			}
 			fmt.Println("Close putch")
+			rb.done <- struct{}{}
 			close(rb.putCh)
 		}()
 		return rb.tmp
